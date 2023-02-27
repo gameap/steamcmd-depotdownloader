@@ -37,8 +37,13 @@ _parse_options ()
             ;;
         +login)
           optionUsername=$2
-          optionPassword=$3
-          shift 3
+
+          if [[ ${optionUsername} != "anonymous" ]]; then
+            optionPassword=$3
+            shift
+          fi
+
+          shift 2
           ;;
         validate)
           optionValidate="1"
