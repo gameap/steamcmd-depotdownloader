@@ -25,7 +25,7 @@ optionValidate="0"
 
 _parse_options ()
 {
-    while [[ $# -gt 0 ]]; do
+    while [[ $# -gt 1 ]]; do
       case "$1" in
         +app_update)
           optionAppID=$2
@@ -38,7 +38,7 @@ _parse_options ()
         +login)
           optionUsername=$2
 
-          if [[ ${optionUsername} != "anonymous" ]]; then
+          if [[ "${optionUsername}" != "anonymous" ]]; then
             optionPassword=$3
             shift
           fi
@@ -48,6 +48,10 @@ _parse_options ()
         validate)
           optionValidate="1"
           shift
+          ;;
+        *)
+          shift
+          ;;
       esac
     done
 }
