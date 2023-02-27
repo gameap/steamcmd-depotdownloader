@@ -47,6 +47,24 @@ _parse_options ()
     done
 }
 
+_check_dependencies()
+{
+  if ! command -v curl > /dev/null 2>&1; then
+    echo "curl not found" >> /dev/stderr
+    exit 1
+  fi
+
+  if ! command -v unzip > /dev/null 2>&1; then
+    echo "unzip not found" >> /dev/stderr
+    exit 1
+  fi
+
+  if ! command -v tar > /dev/null 2>&1; then
+    echo "tar not found" >> /dev/stderr
+    exit 1
+  fi
+}
+
 _install_depotdownloader ()
 {
   echo "Installing DepotDownloader..."
@@ -78,7 +96,9 @@ _install_dotnet ()
       exit 1
   fi
 
-  if ! tar -xvf dotnet.tar.gz; then
+  mkdir "${EXE_PATH}/dotnet"
+
+  if ! tar -xvf dotnet.tar.gz -C "${EXE_PATH}/dotnet"; then
     echo "Failed to unpack dotnet" >> /dev/stderr
     exit 1
   fi
@@ -90,6 +110,8 @@ _install_dotnet ()
 
 _main ()
 {
+  _check_dependencies
+
   if [[ -z ${optionAppID} ]]; then
     echo "Empty APP ID" >> /dev/stderr
     exit 1
@@ -115,12 +137,12 @@ _main ()
 
   declare -a depotdownloaderArgs
 
-  depotdownloaderArgs+=("-app ${optionAppID}")
-  depotdownloaderArgs+=("-dir ${optionDir}")
+  depotdownloaderArgs+=("-app" "${optionAppID}")
+  depotdownloaderArgs+=("-dir" "${optionDir}")
 
   if [[ ! -z ${optionUsername} ]]; then
-    depotdownloaderArgs+=("-username ${optionUsername}")
-    depotdownloaderArgs+=("-password ${optionPassword}")
+    depotdownloaderArgs+=("-username" "${optionUsername}")
+    depotdownloaderArgs+=("-password" "${optionPassword}")
   fi
 
   if [[ ${optionsValidate} == "1" ]]; then
