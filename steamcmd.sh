@@ -112,7 +112,7 @@ _install_dotnet ()
 
   mkdir "${EXE_PATH}/dotnet"
 
-  if ! tar -xvf dotnet.tar.gz -C "${EXE_PATH}/dotnet"; then
+  if ! tar -xvf "${EXE_PATH}/dotnet.tar.gz" -C "${EXE_PATH}/dotnet"; then
     echo "Failed to unpack dotnet" >> /dev/stderr
     exit 1
   fi
