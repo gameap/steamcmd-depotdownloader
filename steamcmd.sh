@@ -63,6 +63,11 @@ _check_dependencies()
     echo "tar not found" >> /dev/stderr
     exit 1
   fi
+
+  if ! ls /usr/lib/*/libicu*; then
+    echo "libicu not found" >> /dev/stderr
+    exit 1
+  fi
 }
 
 _install_depotdownloader ()
