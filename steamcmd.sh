@@ -59,22 +59,22 @@ _parse_options ()
 _check_dependencies()
 {
   if ! command -v curl > /dev/null 2>&1; then
-    echo "curl not found" >> /dev/stderr
+    echo "curl not found" 1>&2
     exit 1
   fi
 
   if ! command -v unzip > /dev/null 2>&1; then
-    echo "unzip not found" >> /dev/stderr
+    echo "unzip not found" 1>&2
     exit 1
   fi
 
   if ! command -v tar > /dev/null 2>&1; then
-    echo "tar not found" >> /dev/stderr
+    echo "tar not found" 1>&2
     exit 1
   fi
 
   if ! ls /usr/lib/*/libicu*; then
-    echo "libicu not found" >> /dev/stderr
+    echo "libicu not found" 1>&2
     exit 1
   fi
 }
@@ -85,17 +85,17 @@ _install_depotdownloader ()
 
   if ! curl -SfL https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip \
     --output "${EXE_PATH}/depotdownloader.zip"; then
-      echo "Failed to download DepotDownloader" >> /dev/stderr
+      echo "Failed to download DepotDownloader" 1>&2
       exit 1
   fi
 
   if ! unzip "${EXE_PATH}/depotdownloader.zip" -d "${EXE_PATH}/depotdownloader"; then
-    echo "Failed to unpack DepotDownloader" >> /dev/stderr
+    echo "Failed to unpack DepotDownloader" 1>&2
     exit 1
   fi
 
   if ! rm "${EXE_PATH}/depotdownloader.zip"; then
-    echo "Failed to remove depotdownloader.zip" >> /dev/stderr
+    echo "Failed to remove depotdownloader.zip" 1>&2
   fi
 
 }
@@ -106,19 +106,19 @@ _install_dotnet ()
 
   if ! curl -SfL https://download.visualstudio.microsoft.com/download/pr/265a56e6-bb98-4b17-948b-bf9884ee3bb3/e2a2587b9a964d155763b706dffaeb8b/dotnet-sdk-6.0.406-linux-x64.tar.gz \
     --output "${EXE_PATH}/dotnet.tar.gz"; then
-      echo "Failed to download dotnet" >> /dev/stderr
+      echo "Failed to download dotnet" 1>&2
       exit 1
   fi
 
   mkdir "${EXE_PATH}/dotnet"
 
   if ! tar -xvf "${EXE_PATH}/dotnet.tar.gz" -C "${EXE_PATH}/dotnet"; then
-    echo "Failed to unpack dotnet" >> /dev/stderr
+    echo "Failed to unpack dotnet" 1>&2
     exit 1
   fi
 
   if ! rm "${EXE_PATH}/dotnet.tar.gz"; then
-    echo "Failed to remove dotnet.tar.gz" >> /dev/stderr
+    echo "Failed to remove dotnet.tar.gz" 1>&2
   fi
 }
 
@@ -127,12 +127,12 @@ _main ()
   _check_dependencies
 
   if [[ -z ${optionAppID} ]]; then
-    echo "Empty APP ID" >> /dev/stderr
+    echo "Empty APP ID" 1>&2
     exit 1
   fi
 
   if [[ -z ${optionDir} ]]; then
-    echo "Empty Installation directory" >> /dev/stderr
+    echo "Empty Installation directory" 1>&2
     exit 1
   fi
 
@@ -154,7 +154,7 @@ _main ()
   depotdownloaderArgs+=("-app" "${optionAppID}")
   depotdownloaderArgs+=("-dir" "${optionDir}")
 
-  if [[ ! -z ${optionUsername} ]]; then
+  if [[ -n ${optionUsername} ]] && [[ -n ${optionPassword} ]]; then
     depotdownloaderArgs+=("-username" "${optionUsername}")
     depotdownloaderArgs+=("-password" "${optionPassword}")
   fi
@@ -166,7 +166,7 @@ _main ()
   # echo "${EXE_PATH}/dotnet/dotnet ${EXE_PATH}/depotdownloader/DepotDownloader.dll ${depotdownloaderArgs[*]}"
 
   if ! "${EXE_PATH}/dotnet/dotnet" "${EXE_PATH}/depotdownloader/DepotDownloader.dll" "${depotdownloaderArgs[@]}"; then
-    echo "Failed to execute depotdownloader" >> /dev/stderr
+    echo "Failed to execute depotdownloader" 1>&2
     exit 1
   fi
 }
